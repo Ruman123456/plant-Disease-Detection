@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediction Result</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background-image: url('/static/images/leafs with light green colour.jpg');
+            background-color: #d4f3e1;
+            background-attachment: fixed;
+            background-size: cover;
+        }
+
+        .result-box {
+            margin: 50px auto;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: #ffffff;
+            width: 50%;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .prediction {
+            font-size: 1.5em;
+            color: #2e7d32;
+            margin: 20px 0;
+        }
+
+        .cause, .treatment {
+            font-size: 1.2em;
+            margin: 10px 0;
+        }
+
+        .cause {
+            color: #d32f2f;
+        }
+
+        .treatment {
+            color: #388e3c;
+        }
+
+        .buttons {
+            margin-top: 30px;
+        }
+
+        .buttons button {
+            background-color: #388e3c;
+            color: #fff;
+            padding: 10px 20px;
+            font-size: 1em;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 0 10px;
+            transition: background-color 0.3s ease;
+        }
+
+        .buttons button:hover {
+            background-color: #2e7d32;
+        }
+    </style>
+</head>
+<body>
+    <h1>Prediction Result</h1>
+    <div class="result-box">
+        <p class="prediction">Predicted Disease: {{ prediction }}</p>
+
+        <!-- Display disease cause and treatment -->
+        <div class="cause">
+            <strong>Cause:</strong> {{ cause }}
+        </div>
+        <div class="treatment">
+            <strong>Treatment:</strong> {{ treatment }}
+        </div>
+
+        <div class="buttons">
+            <button onclick="window.location.href='/'">Home</button>
+        </div>
+    </div>
+</body>
+</html>
