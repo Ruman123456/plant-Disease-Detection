@@ -21,3 +21,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+
+# Ignore full model but allow split parts
+model.tflite
+!model.tflite.part*
