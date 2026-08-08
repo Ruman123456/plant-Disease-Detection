@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagnosis Result — LeafScan AI</title>
+    <meta name="description" content="Plant disease diagnosis result with cause and treatment recommendations.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --green-900: #052e16; --green-700: #15803d; --green-600: #16a34a;
+            --green-400: #4ade80; --accent: #a3e635;
+            --surface: rgba(255,255,255,0.05); --border: rgba(255,255,255,0.1);
+            --text-primary: #f0fdf4; --text-secondary: #bbf7d0; --text-muted: #6ee7b7;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #020c05 0%, #052e16 40%, #0a3d1a 70%, #020c05 100%);
+            min-height: 100vh; color: var(--text-primary);
+        }
+        .bg-orbs { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+        .orb { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.12; }
+        .orb-1 { width: 500px; height: 500px; background: #16a34a; top: -100px; left: -100px; }
+        .orb-2 { width: 400px; height: 400px; background: #4ade80; bottom: 10%; right: -100px; }
+
+        nav {
+            position: sticky; top: 0; z-index: 100;
+            backdrop-filter: blur(20px); background: rgba(5,46,22,0.7);
+            border-bottom: 1px solid var(--border); padding: 0 2rem;
+        }
+        .nav-inner { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 64px; }
+        .logo { display: flex; align-items: center; gap: 10px; font-size: 1.2rem; font-weight: 700; color: var(--text-primary); text-decoration: none; }
+        .logo-icon { width: 34px; height: 34px; background: linear-gradient(135deg, var(--green-600), var(--accent)); border-radius: 9px; display: flex; align-items: center; justify-content: center; }
+        .logo-icon svg { width: 18px; height: 18px; stroke: white; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+        .nav-links { display: flex; gap: 6px; }
+        .nav-links a { color: var(--text-secondary); text-decoration: none; padding: 7px 14px; border-radius: 8px; font-size: 0.88rem; font-weight: 500; transition: all 0.2s; }
+        .nav-links a:hover { background: rgba(255,255,255,0.08); color: var(--text-primary); }
+
+        .page-wrap { position: relative; z-index: 1; max-width: 880px; margin: 0 auto; padding: 44px 2rem 80px; }
+
+        .back-link { display: inline-flex; align-items: center; gap: 7px; color: var(--text-muted); text-decoration: none; font-size: 0.86rem; font-weight: 500; margin-bottom: 32px; transition: color 0.2s; }
+        .back-link svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+        .back-link:hover { color: var(--green-400); }
+
+        .result-header { text-align: center; margin-bottom: 36px; animation: fadeIn 0.5s ease both; }
+        @keyframes fadeIn { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+
+        .result-status {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 7px 18px; border-radius: 100px;
+            font-size: 0.82rem; font-weight: 600; margin-bottom: 16px;
+        }
+        .result-status svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+        .status-disease { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.28); color: #fca5a5; }
+        .status-healthy { background: rgba(74,222,128,0.1); border: 1px solid rgba(74,222,128,0.28); color: var(--green-400); }
+        .result-header h1 { font-size: 1.9rem; font-weight: 800; margin-bottom: 6px; }
+        .result-header .sub { font-size: 0.88rem; color: var(--text-muted); }
+
+        .result-grid { display: grid; grid-template-columns: 1fr 1.5fr; gap: 20px; animation: fadeIn 0.5s ease 0.1s both; }
+
+        .result-image-card {
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: 20px; padding: 18px; backdrop-filter: blur(20px); text-align: center;
+        }
+        .result-image-card img { width: 100%; max-height: 260px; object-fit: cover; border-radius: 11px; border: 1px solid var(--border); }
+        .image-label { font-size: 0.73rem; color: var(--text-muted); margin-top: 10px; font-weight: 500; letter-spacing: 0.3px; }
+
+        .result-info { display: flex; flex-direction: column; gap: 14px; }
+
+        .info-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 22px; backdrop-filter: blur(20px); }
+        .info-card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 13px; }
+        .info-icon { width: 34px; height: 34px; border-radius: 9px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .info-icon svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+        .icon-red { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.25); color: #fca5a5; }
+        .icon-green { background: rgba(74,222,128,0.1); border: 1px solid rgba(74,222,128,0.2); color: var(--green-400); }
+        .info-card h3 { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); }
+        .info-card p { font-size: 0.92rem; line-height: 1.7; color: var(--text-secondary); }
+
+        .prediction-card {
+            background: linear-gradient(135deg, rgba(21,128,61,0.18), rgba(5,46,22,0.4));
+            border: 1px solid rgba(74,222,128,0.22);
+        }
+        .prediction-name { font-size: 1.25rem; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; word-break: break-word; }
+        .confidence-bar-wrap { margin-top: 16px; }
+        .confidence-label { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 6px; }
+        .confidence-bar { height: 5px; background: rgba(255,255,255,0.08); border-radius: 100px; overflow: hidden; }
+        .confidence-fill { height: 100%; background: linear-gradient(90deg, var(--green-600), var(--green-400)); border-radius: 100px; animation: fillBar 1s ease 0.3s both; width: 90%; }
+        @keyframes fillBar { from{width:0} }
+
+        .actions { display: flex; gap: 11px; margin-top: 22px; animation: fadeIn 0.5s ease 0.2s both; }
+        .btn { flex: 1; padding: 13px; border-radius: 11px; font-size: 0.88rem; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s; font-family: 'Inter', sans-serif; display: flex; align-items: center; justify-content: center; gap: 7px; }
+        .btn svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+        .btn-primary { background: linear-gradient(135deg, var(--green-700), var(--green-600)); color: white; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(34,197,94,0.28); }
+        .btn-outline { background: var(--surface); color: var(--text-secondary); border: 1px solid var(--border); }
+        .btn-outline:hover { background: rgba(255,255,255,0.07); }
+
+        @media (max-width: 640px) { .result-grid { grid-template-columns: 1fr; } .actions { flex-direction: column; } }
+    </style>
+</head>
+<body>
+
+<div class="bg-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+</div>
+
+<nav>
+    <div class="nav-inner">
+        <a href="/" class="logo">
+            <div class="logo-icon">
+                <svg viewBox="0 0 24 24" fill="none"><path d="M12 2C9 2 5 5.5 5 10.5C5 15.5 8.1 21 12 22C15.9 21 19 15.5 19 10.5C19 5.5 15 2 12 2Z"/><line x1="12" y1="7" x2="12" y2="19"/><path d="M12 11L9.5 9.5M12 14.5L14.5 13"/></svg>
+            </div>
+            LeafScan AI
+        </a>
+        <div class="nav-links">
+            <a href="/diseases">Disease Library</a>
+            <a href="/feedback">Feedback</a>
+        </div>
+    </div>
+</nav>
+
+<div class="page-wrap">
+    <a href="/" class="back-link">
+        <svg viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        Back to Home
+    </a>
+
+    <div class="result-header">
+        {% if 'healthy' in prediction.lower() %}
+        <div class="result-status status-healthy">
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            Plant is Healthy
+        </div>
+        {% else %}
+        <div class="result-status status-disease">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Disease Detected
+        </div>
+        {% endif %}
+        <h1>Diagnosis Complete</h1>
+        <p class="sub">AI analysis of your submitted leaf image</p>
+    </div>
+
+    <div class="result-grid">
+        <div class="result-image-card">
+            <img src="{{ image_path }}" alt="Submitted leaf">
+            <p class="image-label">Submitted leaf image</p>
+        </div>
+
+        <div class="result-info">
+            <div class="info-card prediction-card">
+                <div class="info-card-header">
+                    <div class="info-icon icon-green">
+                        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    </div>
+                    <h3>Detection Result</h3>
+                </div>
+                <div class="prediction-name">{{ prediction.replace('___', ' — ').replace('_', ' ') }}</div>
+                <div class="confidence-bar-wrap">
+                    <div class="confidence-label"><span>Model Confidence</span><span>~90%</span></div>
+                    <div class="confidence-bar"><div class="confidence-fill"></div></div>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div class="info-card-header">
+                    <div class="info-icon icon-red">
+                        <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                    </div>
+                    <h3>Cause</h3>
+                </div>
+                <p>{{ cause }}</p>
+            </div>
+
+            <div class="info-card">
+                <div class="info-card-header">
+                    <div class="info-icon icon-green">
+                        <svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke-width="2"/></svg>
+                    </div>
+                    <h3>Recommended Treatment</h3>
+                </div>
+                <p>{{ treatment }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="actions">
+        <button class="btn btn-primary" onclick="window.location.href='/'">
+            <svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
+            Scan Another Plant
+        </button>
+        <button class="btn btn-outline" onclick="window.location.href='/diseases'">
+            <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+            Disease Library
+        </button>
+        <button class="btn btn-outline" onclick="window.print()">
+            <svg viewBox="0 0 24 24"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+            Print Report
+        </button>
+    </div>
+</div>
+
+</body>
+</html>
