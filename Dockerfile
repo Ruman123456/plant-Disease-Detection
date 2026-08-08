@@ -37,6 +37,9 @@ ENV HOME=/home/user \
 WORKDIR $HOME/app
 COPY --chown=user . $HOME/app
 
+# Reassemble the split TFLite model chunks into the full model file
+RUN cat model.tflite.part* > model.tflite && rm model.tflite.part*
+
 # Create upload directory and set permissions
 RUN mkdir -p $HOME/app/static/uploads && chmod -R 777 $HOME/app/static/uploads
 
@@ -44,4 +47,5 @@ RUN mkdir -p $HOME/app/static/uploads && chmod -R 777 $HOME/app/static/uploads
 EXPOSE 7860
 
 # Run the application using gunicorn for production grade deployment
-CMD ["gunicorn", "-b", "0.0.0.0:7860", "--timeout", "120", "--workers", "2", "app:app"]
+# Binds to the $PORT environment variable provided by Render, or defaults to 7860
+CMD gunicorn -b 0.0.0.0:${PORT:-7860} --timeout 120 --workers 2 app:app
