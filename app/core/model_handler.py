@@ -7,7 +7,7 @@ This isolates TFLite operations from the main web routing logic.
 import os
 import numpy as np
 from PIL import Image
-from utils import class_names, disease_info
+from app.core.utils import class_names, disease_info
 
 # Try to import tflite_runtime, fallback to full tensorflow if not available locally
 try:
@@ -26,7 +26,7 @@ def get_model():
     """
     global _interpreter, _input_details, _output_details
     if _interpreter is None:
-        model_path = os.path.join(os.path.dirname(__file__), 'model.tflite')
+        model_path = os.path.join(os.path.dirname(__file__), '..', '..', 'model_data', 'model.tflite')
         if not os.path.exists(model_path):
             raise FileNotFoundError(f"Model file not found at {model_path}. Please place 'model.tflite' in the project root.")
         print("Loading TFLite AI Model into memory (this is much faster)...")

@@ -15,10 +15,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy the requirements file into the container at /app
-COPY requirement.txt /app/
+COPY requirements.txt /app/
 
 # Install the Python dependencies
-RUN pip install --no-cache-dir -r requirement.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the current directory contents into the container at /app
 # This includes the model file my_model.h5
@@ -38,10 +38,10 @@ WORKDIR $HOME/app
 COPY --chown=user . $HOME/app
 
 # Reassemble the split TFLite model chunks into the full model file
-RUN cat model.tflite.part* > model.tflite && rm model.tflite.part*
+RUN cat model_data/model.tflite.part* > model_data/model.tflite && rm model_data/model.tflite.part*
 
 # Create upload directory and set permissions
-RUN mkdir -p $HOME/app/static/uploads && chmod -R 777 $HOME/app/static/uploads
+RUN mkdir -p $HOME/app/app/static/uploads && chmod -R 777 $HOME/app/app/static/uploads
 
 # Expose port 7860 which is used by Hugging Face Spaces
 EXPOSE 7860
