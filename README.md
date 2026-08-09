@@ -100,14 +100,15 @@ This project focuses on developing a robust and efficient solution for detecting
 
 ## Deployment
 
-### Deployment Process:
-1. Package the Flask application.
-2. Run the application locally at [http://127.0.0.1:5000/](http://127.0.0.1:5000/).
+### Live Application 🌐
+The application is fully deployed and accessible to the public here:
+**👉 [LeafScan AI Live Demo](https://leafscan-ai-mrtb.onrender.com) 👈**
 
-### Instructions for Deployment:
+### Local Deployment Process:
 1. Clone the repository.
-2. Install dependencies using `requirements.txt`.
-3. Set up the Flask environment and run the application locally or on a server.
+2. Install dependencies using `requirement.txt` (Note: Uses lightweight `tflite-runtime`).
+3. Run the application locally via `python app.py`.
+4. Access the app at [http://127.0.0.1:7860/](http://127.0.0.1:7860/).
 
 ---
 
